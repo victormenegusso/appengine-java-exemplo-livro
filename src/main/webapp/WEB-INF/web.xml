@@ -3,4 +3,22 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+	<servlet>
+		<servlet-name>JerseyServices</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<!-- pacote com os Jerseys -->
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>estudo.appengine.services</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.glassfish.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>JerseyServices</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
 </web-app>
