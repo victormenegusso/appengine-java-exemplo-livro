@@ -1,0 +1,29 @@
+# Created by https://www.gitignore.io
+
+### AppEngine ###
+# Google App Engine generated folder
+appengine-generated/
+
+
+### Java ###
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+
+### Maven ###
+target/
+
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
