@@ -26,28 +26,33 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-
+import java.util.logging.Logger;
 import estudo.appengine.models.Product;
 
 @Path("/products")
 public class ProductManager {
 
+	private static final Logger log = Logger.getLogger(ProductManager.class.getName());
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Product saveProduct(Product product) {
+		log.fine("Iniciando salve de produto");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key productKey = KeyFactory.createKey("Products", "productKey");
 		Entity productEntity = new Entity("Products", productKey);
 		productToEntity(product, productEntity);
 		datastore.put(productEntity);
 		product.setId(productEntity.getKey().getId());
+		log.info("Produto com código=[" + product.getId() + "] salvo com sucesso");
 		return product;
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Product> getProducts() {
+		log.fine("Iniciando listagem de produtos");
 		List<Product> products = new ArrayList<>();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query query;
@@ -64,6 +69,7 @@ public class ProductManager {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{code}")
 	public Product getProduct(@PathParam("code") int code) {
+		log.fine("Iniciando get no produto com código=[" + code +"]");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Filter codeFilter = new FilterPredicate("Code", FilterOperator.EQUAL, code);
 		Query query = new Query("Products").setFilter(codeFilter);
@@ -71,8 +77,10 @@ public class ProductManager {
 		Entity productEntity = datastore.prepare(query).asSingleEntity();
 		if (productEntity != null) {
 			Product product = entityToProduct(productEntity);
+			log.info("Produto com código=[" + code + "] encontrado com sucesso");
 			return product;
 		} else {
+			log.severe ("Erro ao encontrar produto com código=[" + code + "]. Produto não encontrado!!!");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
@@ -82,6 +90,7 @@ public class ProductManager {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/{code}")
 	public Product alterProduct(@PathParam("code") int code, Product product) {
+		log.fine("Iniciando alteracao no produto com código=[" + code +"]");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Filter codeFilter = new FilterPredicate("Code", FilterOperator.EQUAL, code);
 		Query query = new Query("Products").setFilter(codeFilter);
@@ -90,8 +99,10 @@ public class ProductManager {
 			productToEntity(product, productEntity);
 			datastore.put(productEntity);
 			product.setId(productEntity.getKey().getId());
+			log.info("Produto com código=[" + code + "] altarado com sucesso");
 			return product;
 		} else {
+			log.severe ("Erro ao alterar produto com código=[" + code + "]. Produto não encontrado!!!");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
@@ -100,6 +111,7 @@ public class ProductManager {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{code}")
 	public Product deleteProduct(@PathParam("code") int code) {
+		log.fine("Tentando apagar produto com código=[" + code +"]");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Filter codeFilter = new FilterPredicate("Code", FilterOperator.EQUAL, code);
 		Query query = new Query("Products").setFilter(codeFilter);
@@ -107,8 +119,10 @@ public class ProductManager {
 		if (productEntity != null) {
 			datastore.delete(productEntity.getKey());
 			Product product = entityToProduct(productEntity);
+			log.info("Produto com código=[" + code + "] apagado com sucesso");
 			return product;
 		} else {
+			log.severe ("Erro ao apagar produto com código=[" + code + "]. Produto não encontrado!!!");
 			throw new WebApplicationException(Status.NOT_FOUND);
 		}
 	}
